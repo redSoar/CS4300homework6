@@ -24,6 +24,11 @@
             "cwd": "/Users/ashesh/Documents/teaching/CS 4300/private/coding/C++/glfw/ScenegraphsLightsTextures",
             "binaryPath": "/Users/ashesh/Documents/teaching/CS 4300/private/coding/C++/glfw/ScenegraphsLightsTextures/ScenegraphsLightsTextures",
             "binaryArgs": []
+        },
+        {
+            "cwd": "c:\\Users\\Hyper\\CS4300\\CS4300homework6",
+            "binaryPath": "c:\\Users\\Hyper\\CS4300\\CS4300homework6\\Homework6.exe",
+            "binaryArgs": []
         }
     ],
     "git.ignoreLimitWarning": true,
@@ -34,5 +39,7 @@
         "ostream": "cpp",
         "iosfwd": "cpp",
         "iostream": "cpp"
-    }
+    },
+    "makefile.makefilePath": "C:\\Users\\Hyper\\CS4300\\CS4300homework6\\Makefile",
+    "makefile.makePath": "mingw32-make"
 }

@@ -1,9 +1,9 @@
-OBJS = Scenegraphs.o View.o Controller.o Model.o
+OBJS = Homework6.o View.o Controller.o Model.o
 INCLUDES = -I../include
 LIBS = -L../lib
 LDFLAGS = -lglad -lglfw3
 CFLAGS = -g -std=c++11
-PROGRAM = ScenegraphsLightsTextures
+PROGRAM = Homework6
 
 
 ifeq ($(OS),Windows_NT)     # is Windows_NT on XP, 2000, 7, Vista, 10...
@@ -15,11 +15,11 @@ else ifeq ($(shell uname -s),Darwin)     # is MACOSX
 	COMPILER = clang++
 endif
 
-ScenegraphsLightsTextures: $(OBJS)
+Homework6: $(OBJS)
 	$(COMPILER) -o $(PROGRAM) $(OBJS) $(LIBS) $(LDFLAGS)
 
-Scenegraphs.o: Scenegraphs.cpp
-	$(COMPILER) $(INCLUDES) $(CFLAGS) -c Scenegraphs.cpp
+Homework6.o: Homework6.cpp
+	$(COMPILER) $(INCLUDES) $(CFLAGS) -c Homework6.cpp
 
 View.o: View.cpp View.h
 	$(COMPILER) $(INCLUDES) $(CFLAGS) -c View.cpp	
