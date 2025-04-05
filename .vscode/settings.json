@@ -1,0 +1,38 @@
+{
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "c:\\Users\\ashesh\\Documents\\teaching\\CS 4300\\private\\coding\\C++\\glfw\\HelloOpenGLMVC",
+            "binaryPath": "c:\\Users\\ashesh\\Documents\\teaching\\CS 4300\\private\\coding\\C++\\glfw\\HelloOpenGLMVC\\HelloOpenGLMVC",
+            "binaryArgs": []
+        },
+        {
+            "cwd": "c:\\Users\\ashesh\\Documents\\teaching\\CS 4300\\private\\coding\\C++\\glfw\\Scenegraphs",
+            "binaryPath": "c:\\Users\\ashesh\\Documents\\teaching\\CS 4300\\private\\coding\\C++\\glfw\\Scenegraphs\\Scenegraphs.exe",
+            "binaryArgs": []
+        },
+        {
+            "cwd": "c:\\Users\\ashesh\\Documents\\teaching\\CS 4300\\private\\coding\\C++\\glfw\\ScenegraphsLightsTextures",
+            "binaryPath": "c:\\Users\\ashesh\\Documents\\teaching\\CS 4300\\private\\coding\\C++\\glfw\\ScenegraphsLightsTextures\\ScenegraphsLightsTextures.exe",
+            "binaryArgs": []
+        },
+        {
+            "cwd": "c:\\Users\\ashesh\\Documents\\teaching\\CS 4300\\private\\coding\\C++\\glfw\\ScenegraphsLightsTextures",
+            "binaryPath": "c:\\Users\\ashesh\\Documents\\teaching\\CS 4300\\private\\coding\\C++\\glfw\\ScenegraphsLightsTextures\\Scenegraphs.exe",
+            "binaryArgs": []
+        },
+        {
+            "cwd": "/Users/ashesh/Documents/teaching/CS 4300/private/coding/C++/glfw/ScenegraphsLightsTextures",
+            "binaryPath": "/Users/ashesh/Documents/teaching/CS 4300/private/coding/C++/glfw/ScenegraphsLightsTextures/ScenegraphsLightsTextures",
+            "binaryArgs": []
+        }
+    ],
+    "git.ignoreLimitWarning": true,
+    "files.associations": {
+        "map": "cpp",
+        "new": "cpp",
+        "typeinfo": "cpp",
+        "ostream": "cpp",
+        "iosfwd": "cpp",
+        "iostream": "cpp"
+    }
+}
