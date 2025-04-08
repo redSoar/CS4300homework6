@@ -160,7 +160,7 @@ void View::raytrace(sgraph::IScenegraph *scenegraph) {
 void View::display(sgraph::IScenegraph *scenegraph) {
     
     program.enable();
-    glClearColor(0,0,0,1);
+    glClearColor(1,1,1,1);
     glClear(GL_COLOR_BUFFER_BIT| GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
     //glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);

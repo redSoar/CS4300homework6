@@ -31,11 +31,19 @@ namespace sgraph {
 
         void visitLeafNode(LeafNode *leafNode) {
             string instance = leafNode->getInstanceOf();
+
+            
             if(instance == "box") {
                 
             }
-            if(instance == "sphere") {
-                
+            else if(instance == "sphere") {
+
+            }
+            else if(instance == "cylinder") {
+
+            }
+            else if(instance == "cone") {
+
             }
         }
 

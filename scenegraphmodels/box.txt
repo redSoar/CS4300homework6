@@ -1,5 +1,5 @@
 #all the instances
-instance box models/box.obj
+instance box models/sphere.obj
 
 #material
 material mat-node-3-0
@@ -22,8 +22,8 @@ end-light
 group root root
 assign-light one-light root
 
-scale node-2-0 scale 100 100 100
-leaf node-3-0 one-box instanceof box #comment here?
+scale node-2-0 scale 20 20 20
+leaf node-3-0 node-3-0 instanceof box #comment here?
 assign-material node-3-0 mat-node-3-0
 
 
