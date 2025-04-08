@@ -27,6 +27,7 @@ public:
     ~View();
     void init(Callbacks *callbacks,map<string,util::PolygonMesh<VertexAttrib>>& meshes,map<string,util::TextureImage*>& textures);
     void display(sgraph::IScenegraph *scenegraph);
+    void raytrace(sgraph::IScenegraph *scenegraph);
     bool shouldWindowClose();
     void closeWindow();
 
@@ -40,7 +41,11 @@ private:
     glm::mat4 projection;
     stack<glm::mat4> modelview;
     sgraph::SGNodeVisitor *renderer;
+    glm::mat4 lookat;
+    int height;
+    int width;
     int frames;
+    float fov;
     double time;
 };
 

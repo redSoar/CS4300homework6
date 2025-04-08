@@ -6,6 +6,8 @@
 #include "glm/glm.hpp"
 #include "IVertexData.h"
 #include "PolygonMesh.h"
+#include "../Ray3D.h"
+#include "RayCastVisitor.h"
 #include <string>
 #include <map>
 using namespace std;
@@ -113,6 +115,44 @@ namespace sgraph {
     map<string,util::TextureImage*> getTextures() {
       return textures;
     }
+
+    bool raycast(Ray3D ray, glm::mat4 mv){
+      stack<glm::mat4> modelviews;
+      modelviews.push(mv);
+      RayCastVisitor *rcv = new sgraph::RayCastVisitor(modelviews);
+      root->accept(rcv);
+      return rcv->getHit();
+    }
   };
 }
 #endif
+
+
+/*
+
+Scenegraph
+-> raycast(3dray, mv, *hit);
+  raycast{
+    RayCastVisitor rcv;
+    root.accept(rcv);
+    return rcv.getHit();
+  }
+
+RayTraceVisitor
+  field:
+    bool hit;
+  functions:
+    visitGroupNOde
+    visitLeafNode
+      check instance
+      do the respective math calculation
+      set hit to true if it hit
+      do nothing if not
+    getHit(){
+      return hit
+    }
+
+
+
+
+*/

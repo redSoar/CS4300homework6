@@ -17,6 +17,8 @@ Controller::Controller(Model& m,View& v) {
     view = v;
 
     initScenegraph();
+    rayTraceMode = false;
+    count = 0;
 }
 
 void Controller::initScenegraph() {
@@ -24,7 +26,7 @@ void Controller::initScenegraph() {
      
     
     //read in the file of commands
-    ifstream inFile("scenegraphmodels/simple.txt");
+    ifstream inFile("scenegraphmodels/box.txt");
     //ifstream inFile("tryout.txt");
     sgraph::ScenegraphImporter importer;
     
@@ -48,7 +50,14 @@ void Controller::run()
     map<string,util::TextureImage *> textures = scenegraph->getTextures();
     view.init(this,meshes,textures);
     while (!view.shouldWindowClose()) {
-        view.display(scenegraph);
+        if(rayTraceMode){
+            if (count == 0) {
+                view.raytrace(scenegraph);
+                count++;
+            }
+        } else {
+            view.display(scenegraph);
+        }
     }
     view.closeWindow();
     exit(EXIT_SUCCESS);
@@ -56,7 +65,10 @@ void Controller::run()
 
 void Controller::onkey(int key, int scancode, int action, int mods)
 {
-    cout << (char)key << " pressed" << endl;
+    if (key == GLFW_KEY_S) { // 's' or 'S'
+        rayTraceMode = !rayTraceMode;
+        count = 0;
+    }
 }
 
 void Controller::reshape(int width, int height) 

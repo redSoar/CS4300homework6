@@ -14,8 +14,6 @@ public:
         mat = material;
     }
 
-    ~HitRecord();
-
     float getTime() {
         return t;
     }

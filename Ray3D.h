@@ -16,8 +16,6 @@ public:
         direction = dir;
     }
 
-    ~Ray3D();
-
     glm::vec3 getPoint() {
         return point;
     }

@@ -1,6 +1,7 @@
 #include "View.h"
 #include <cstdio>
 #include <cstdlib>
+#include <cmath>
 #include <vector>
 using namespace std;
 #include <glm/glm.hpp>
@@ -9,6 +10,8 @@ using namespace std;
 #include "sgraph/GLScenegraphRenderer.h"
 #include "VertexAttrib.h"
 #include "sgraph/LightGatherer.h"
+#include "sgraph/Scenegraph.h"
+#include "Ray3D.h"
 
 View::View() {
 
@@ -27,8 +30,11 @@ void View::init(Callbacks *callbacks,map<string,util::PolygonMesh<VertexAttrib>>
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    width = 100;
+    height = 100;
+    fov = 60.0f;
 
-    window = glfwCreateWindow(800, 800, "Lights and Textures in a Scenegraph", NULL, NULL);
+    window = glfwCreateWindow(width, height, "Lights and Textures in a Scenegraph", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -111,17 +117,44 @@ void View::init(Callbacks *callbacks,map<string,util::PolygonMesh<VertexAttrib>>
     glfwGetFramebufferSize(window,&window_width,&window_height);
 
     //prepare the projection matrix for perspective projection
-	projection = glm::perspective(glm::radians(60.0f),(float)window_width/window_height,0.1f,10000.0f);
+	projection = glm::perspective(glm::radians(fov),(float)window_width/window_height,0.1f,10000.0f);
     glViewport(0, 0, window_width,window_height);
 
     frames = 0;
     time = glfwGetTime();
 
     renderer = new sgraph::GLScenegraphRenderer(modelview,objects,textureIds,shaderLocations);
+    lookat = glm::lookAt(glm::vec3(0.0f,40.0f,40.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.0f,1.0f,0.0f));
     
 }
 
+void View::raytrace(sgraph::IScenegraph *scenegraph) {
+    glm::vec3 image[100][100];
+    modelview.push(glm::mat4(1.0));
+    modelview.top() = modelview.top() * lookat;
+    for(int y = 0; y < height; y++) {
+        for(int x = 0; x < width; x++) {
+            glm::vec3 s = glm::vec3(0, 0, 0);
+            int Vx = -(width/2) + x;
+            int Vy = -(height/2) + y;
+            int Vz = (-0.5f * height)/(tan(0.5f * glm::radians(fov)));
+            glm::vec3 d = glm::vec3(Vx, Vy, Vz);
+            Ray3D ray(s, d);
+            sgraph::Scenegraph* sgraph = (dynamic_cast<sgraph::Scenegraph*>(scenegraph));
+            bool hit = sgraph->raycast(ray, modelview.top());
+            if(hit) {
+                image[x][y] = glm::vec3(1, 1, 1);
+            }
+            else {
+                image[x][y] = glm::vec3(0, 0, 0);
+            }
+        }
+    }
 
+    // Draw image
+    
+    modelview.pop();
+}
 
 
 void View::display(sgraph::IScenegraph *scenegraph) {
@@ -133,11 +166,9 @@ void View::display(sgraph::IScenegraph *scenegraph) {
     //glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
     //glEnable(GL_CULL_FACE);
     //glCullFace(GL_FRONT_FACE);
-
-    
     
     modelview.push(glm::mat4(1.0));
-    modelview.top() = modelview.top() * glm::lookAt(glm::vec3(0.0f,40.0f,40.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.0f,1.0f,0.0f));
+    modelview.top() = modelview.top() * lookat;
     //send projection matrix to GPU    
     glUniformMatrix4fv(shaderLocations.getLocation("projection"), 1, GL_FALSE, glm::value_ptr(projection));
     

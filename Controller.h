@@ -21,6 +21,8 @@ private:
 
     View view;
     Model model;
+    bool rayTraceMode;
+    int count;
 };
 
 #endif
