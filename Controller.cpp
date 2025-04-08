@@ -54,6 +54,7 @@ void Controller::run()
             if (count == 0) {
                 view.raytrace(scenegraph);
                 count++;
+                break;
             }
         } else {
             view.display(scenegraph);

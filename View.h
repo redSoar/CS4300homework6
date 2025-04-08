@@ -30,6 +30,7 @@ public:
     void raytrace(sgraph::IScenegraph *scenegraph);
     bool shouldWindowClose();
     void closeWindow();
+    void imageToPPM(glm::vec3 image[70][70]);
 
 private: 
 
@@ -47,6 +48,7 @@ private:
     int frames;
     float fov;
     double time;
+
 };
 
 #endif

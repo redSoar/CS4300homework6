@@ -1,5 +1,5 @@
 #all the instances
-instance box models/sphere.obj
+instance box models/box-outside.obj
 
 #material
 material mat-node-3-0

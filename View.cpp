@@ -30,8 +30,8 @@ void View::init(Callbacks *callbacks,map<string,util::PolygonMesh<VertexAttrib>>
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    width = 100;
-    height = 100;
+    width = 70;
+    height = 70;
     fov = 60.0f;
 
     window = glfwCreateWindow(width, height, "Lights and Textures in a Scenegraph", NULL, NULL);
@@ -129,7 +129,7 @@ void View::init(Callbacks *callbacks,map<string,util::PolygonMesh<VertexAttrib>>
 }
 
 void View::raytrace(sgraph::IScenegraph *scenegraph) {
-    glm::vec3 image[100][100];
+    glm::vec3 image[70][70];
     modelview.push(glm::mat4(1.0));
     modelview.top() = modelview.top() * lookat;
     for(int y = 0; y < height; y++) {
@@ -150,10 +150,35 @@ void View::raytrace(sgraph::IScenegraph *scenegraph) {
             }
         }
     }
+    for(int i = 0; i < height; i++) {
+        cout << endl;
+        for(int j = 0; j < width; j++) {
+            cout << image[i][j].x << " ";
+        }
+    }
 
     // Draw image
-    
+    imageToPPM(image);
     modelview.pop();
+}
+
+void View::imageToPPM(glm::vec3 image[70][70]){
+    std::ofstream imageFile("output.ppm", std::ios::binary);
+    if (imageFile.is_open()) {
+        imageFile << "P3\n" << width << " " << height << "\n255\n";
+        for (int y = 0; y < height; ++y) {
+            for (int x = 0; x < width; ++x) {
+                int r = (int) image[y][x].x * 255;
+                int g = (int) image[y][x].y * 255;
+                int b = (int) image[y][x].z * 255;
+                imageFile << r << " " << g << " " << b << " ";
+            }
+            imageFile << "\n";
+        }
+        imageFile.close();
+    } else {
+        std::cerr << "Error opening file." << std::endl;
+    }
 }
 
 

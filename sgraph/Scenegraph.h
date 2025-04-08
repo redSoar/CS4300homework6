@@ -119,7 +119,7 @@ namespace sgraph {
     bool raycast(Ray3D ray, glm::mat4 mv){
       stack<glm::mat4> modelviews;
       modelviews.push(mv);
-      RayCastVisitor *rcv = new sgraph::RayCastVisitor(modelviews);
+      RayCastVisitor *rcv = new sgraph::RayCastVisitor(modelviews, ray);
       root->accept(rcv);
       return rcv->getHit();
     }
