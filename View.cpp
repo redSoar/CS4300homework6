@@ -184,8 +184,11 @@ void View::imageToPPM(const std::vector<std::vector<glm::vec3>>& image){
         for (int y = height - 1; y >= 0; y--) {
             for (int x = 0; x < width; x++) {
                 int r = static_cast<int>(image[x][y].x * 255.0f);
+                r = r > 255 ? 255 : r;
                 int g = static_cast<int>(image[x][y].y * 255.0f);
+                g = g > 255 ? 255 : g;
                 int b = static_cast<int>(image[x][y].z * 255.0f);
+                b = b > 255 ? 255 : b;
                 imageFile << r << " " << g << " " << b << " ";
             }
             imageFile << "\n";

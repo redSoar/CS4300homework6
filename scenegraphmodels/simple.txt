@@ -73,7 +73,7 @@ translate s-translate s-translate 10 0 0
 scale s-scale s-scale 5 5 5
 leaf one-sphere one-sphere instanceof sphere 
 assign-material one-sphere sphere-material
-assign-texture one-sphere checkerboard
+assign-texture one-sphere white
 
 add-child one-sphere s-scale
 add-child s-scale s-translate
