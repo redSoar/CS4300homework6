@@ -1,5 +1,5 @@
 #all the instances
-instance sphere models/sphere.obj
+instance sphere models/cylinder.obj
 
 #materials
 material box-material
