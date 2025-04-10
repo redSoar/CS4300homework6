@@ -150,25 +150,27 @@ namespace sgraph {
         }
 
         glm::vec3 calculateNormalForBox(glm::vec3 poi) {
-            if (poi.x == 0.5f) {
+            const float epsilon = 1e-4f;
+            if (fabs(poi.x - 0.5f) < epsilon) {
                 return glm::vec3(1,0,0);
             }
-            else if (poi.x == -0.5f) {
+            else if (fabs(poi.x + 0.5f) < epsilon) {
                 return glm::vec3(-1,0,0);
             }
-            else if (poi.y == 0.5f) {
+            else if (fabs(poi.y - 0.5f) < epsilon) {
                 return glm::vec3(0,1,0);
             }
-            else if (poi.y == -0.5f) {
+            else if (fabs(poi.y + 0.5f) < epsilon) {
                 return glm::vec3(0,-1,0);
             }
-            else if (poi.z == 0.5f) {
+            else if (fabs(poi.z - 0.5f) < epsilon) {
                 return glm::vec3(0,0,1);
             }
-            else if (poi.z == -0.5f) {
+            else if (fabs(poi.z + 0.5f) < epsilon) {
                 return glm::vec3(0,0,-1);
             }
-            return glm::vec3(0,0,0);
+        
+            return glm::vec3(0, 0, 0);
         }
 
    };

@@ -26,7 +26,7 @@ void Controller::initScenegraph() {
      
     
     //read in the file of commands
-    ifstream inFile("scenegraphmodels/simple.txt");
+    ifstream inFile("scenegraphmodels/box.txt");
     //ifstream inFile("tryout.txt");
     sgraph::ScenegraphImporter importer;
     
@@ -51,12 +51,8 @@ void Controller::run()
     view.init(this,meshes,textures);
     while (!view.shouldWindowClose()) {
         if(rayTraceMode){
-            if (count == 0) {
-                view.closeWindow();
-                view.raytrace(scenegraph);
-                count++;
-                exit(EXIT_SUCCESS);
-            }
+            view.raytrace(scenegraph);
+            rayTraceMode = !rayTraceMode;
         } else {
             view.display(scenegraph);
         }
@@ -67,7 +63,7 @@ void Controller::run()
 
 void Controller::onkey(int key, int scancode, int action, int mods)
 {
-    if (key == GLFW_KEY_S) { // 's' or 'S'
+    if (key == GLFW_KEY_S && action == GLFW_RELEASE) { // 's' or 'S'
         rayTraceMode = !rayTraceMode;
         count = 0;
     }

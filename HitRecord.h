@@ -55,7 +55,7 @@ public:
         return mat;
     }
 
-    void setMaterial(util::Material material) {
+    void setMaterial(const util::Material& material) {
         mat = material;
     }
     

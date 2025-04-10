@@ -152,7 +152,7 @@ void View::raytrace(sgraph::IScenegraph *scenegraph) {
                 //image[x][y] = glm::vec3(hit.getMaterial().getAmbient().x, hit.getMaterial().getAmbient().y, hit.getMaterial().getAmbient().z);
             }
             else {
-                image[x][y] = glm::vec3(0, 0, 0);
+                image[x][y] = glm::vec3(1, 1, 1);
             }
             int currentProgress = ((y * width + x) * 100) / (height * width);
             if (currentProgress >= (currentPrint + 1)) {
@@ -221,12 +221,10 @@ glm::vec3 View::shade(HitRecord hitrec, vector<util::Light> light) {
 
         normalView = glm::normalize(hitrec.getNormal());
         nDotL = glm::dot(normalView,lightVec);
-
         viewVec = -hitrec.getIntersect();
         viewVec = glm::normalize(viewVec);
 
         reflectVec = glm::reflect(-lightVec,normalView);
-        reflectVec = glm::normalize(reflectVec);
 
         rDotV = std::max(glm::dot(reflectVec,viewVec),0.0f);
 
