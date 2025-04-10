@@ -30,8 +30,8 @@ void View::init(Callbacks *callbacks,map<string,util::PolygonMesh<VertexAttrib>>
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    width = 70;
-    height = 70;
+    width = 800;
+    height = 800;
     fov = 60.0f;
 
     window = glfwCreateWindow(width, height, "Lights and Textures in a Scenegraph", NULL, NULL);
@@ -129,9 +129,11 @@ void View::init(Callbacks *callbacks,map<string,util::PolygonMesh<VertexAttrib>>
 }
 
 void View::raytrace(sgraph::IScenegraph *scenegraph) {
-    glm::vec3 image[70][70];
+    cout << "Processing Ray Trace" << endl;
+    std::vector<std::vector<glm::vec3>> image(width, std::vector<glm::vec3>(height));
     modelview.push(glm::mat4(1.0));
     modelview.top() = modelview.top() * lookat;
+    int currentPrint = -1;
     for(int y = 0; y < height; y++) {
         for(int x = 0; x < width; x++) {
             glm::vec3 s = glm::vec3(0, 0, 0);
@@ -143,34 +145,47 @@ void View::raytrace(sgraph::IScenegraph *scenegraph) {
             sgraph::Scenegraph* sgraph = (dynamic_cast<sgraph::Scenegraph*>(scenegraph));
             HitRecord hit = sgraph->raycast(ray, modelview.top());
             if(hit.getHit()) {
-                image[x][y] = glm::vec3(hit.getMaterial().getAmbient().x, hit.getMaterial().getAmbient().y, hit.getMaterial().getAmbient().z);
+                sgraph::LightGatherer * gatherer = new sgraph::LightGatherer(modelview);
+                scenegraph->getRoot()->accept(gatherer);
+                vector<util::Light> lightsInViewSpace = gatherer->getLightsInViewSpace();
+                image[x][y] = shade(hit, lightsInViewSpace);
+                //image[x][y] = glm::vec3(hit.getMaterial().getAmbient().x, hit.getMaterial().getAmbient().y, hit.getMaterial().getAmbient().z);
             }
             else {
                 image[x][y] = glm::vec3(0, 0, 0);
             }
+            int currentProgress = ((y * width + x) * 100) / (height * width);
+            if (currentProgress >= (currentPrint + 1)) {
+                printf("Loading: %d%%\r", currentProgress);
+                currentPrint = currentProgress;
+            }
         }
     }
-    for(int i = 0; i < height; i++) {
-        cout << endl;
-        for(int j = 0; j < width; j++) {
-            cout << image[i][j].x << " ";
-        }
-    }
+    cout << "Loading Complete" << endl;
+    cout << "PPM Image has been created at root directory : output.ppm" << endl;
+    // for(int i = 0; i < height; i++) {
+    //     cout << endl;
+    //     for(int j = 0; j < width; j++) {
+    //         cout << image[i][j].x << " ";
+    //     }
+    // }
 
     // Draw image
     imageToPPM(image);
     modelview.pop();
 }
 
-void View::imageToPPM(glm::vec3 image[70][70]){
+
+
+void View::imageToPPM(const std::vector<std::vector<glm::vec3>>& image){
     std::ofstream imageFile("output.ppm", std::ios::binary);
     if (imageFile.is_open()) {
         imageFile << "P3\n" << width << " " << height << "\n255\n";
-        for (int y = 0; y < height; ++y) {
-            for (int x = 0; x < width; ++x) {
-                int r = (int) image[y][x].x * 255;
-                int g = (int) image[y][x].y * 255;
-                int b = (int) image[y][x].z * 255;
+        for (int y = height - 1; y >= 0; y--) {
+            for (int x = 0; x < width; x++) {
+                int r = static_cast<int>(image[x][y].x * 255.0f);
+                int g = static_cast<int>(image[x][y].y * 255.0f);
+                int b = static_cast<int>(image[x][y].z * 255.0f);
                 imageFile << r << " " << g << " " << b << " ";
             }
             imageFile << "\n";
@@ -179,6 +194,53 @@ void View::imageToPPM(glm::vec3 image[70][70]){
     } else {
         std::cerr << "Error opening file." << std::endl;
     }
+}
+
+glm::vec3 View::shade(HitRecord hitrec, vector<util::Light> light) {
+    glm::vec4 fColor = glm::vec4(0,0,0,1);
+    int numLights = light.size();
+    glm::vec3 lightVec,viewVec,reflectVec;
+    glm::vec3 normalView;
+    glm::vec3 ambient,diffuse,specular;
+    float nDotL,rDotV;
+    for (int i=0;i<numLights;i++)
+    {
+        glm:: vec3 spotdirection= glm::vec3(0,0,0);
+        if (glm::length(light[i].getSpotDirection())>0.01f){
+            spotdirection = glm::normalize(glm::vec3(light[i].getSpotDirection()));
+        }
+        if (light[i].getPosition().w!=0) {
+            lightVec = glm::normalize(glm::vec3(light[i].getPosition()) - hitrec.getIntersect());
+        }
+        else{
+            lightVec = glm::normalize(-glm::vec3(light[i].getPosition()));
+        }
+        if (glm::dot(-lightVec,spotdirection)<=glm::cos(glm::radians(light[i].getSpotCutoff()))) {
+            continue;
+        }
+
+        normalView = glm::normalize(hitrec.getNormal());
+        nDotL = glm::dot(normalView,lightVec);
+
+        viewVec = -hitrec.getIntersect();
+        viewVec = glm::normalize(viewVec);
+
+        reflectVec = glm::reflect(-lightVec,normalView);
+        reflectVec = glm::normalize(reflectVec);
+
+        rDotV = std::max(glm::dot(reflectVec,viewVec),0.0f);
+
+        ambient = glm::vec3(hitrec.getMaterial().getAmbient()) * light[i].getAmbient();
+        diffuse = glm::vec3(hitrec.getMaterial().getDiffuse()) * light[i].getDiffuse() * std::max(nDotL,0.0f);
+        if (nDotL>0.0f) {
+            specular = glm::vec3(hitrec.getMaterial().getSpecular()) * light[i].getSpecular() * std::pow(rDotV,hitrec.getMaterial().getShininess());
+        }
+        else {
+            specular = glm::vec3(0,0,0);
+        }
+        fColor = fColor + glm::vec4(ambient+diffuse+specular,1.0);
+    }
+    return glm::vec3(fColor);
 }
 
 

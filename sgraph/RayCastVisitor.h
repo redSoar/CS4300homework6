@@ -40,7 +40,7 @@ namespace sgraph {
                 checkForBoxIntersection(transformedOrigin, transformedDirection, leafNode->getMaterial());
             }
             else if(instance == "sphere") {
-                checkForSphereIntersection(transformedOrigin, transformedDirection);
+                checkForSphereIntersection(transformedOrigin, transformedDirection, leafNode->getMaterial());
             }
             else if(instance == "cylinder") {
 
@@ -85,28 +85,15 @@ namespace sgraph {
         void checkForBoxIntersection(glm::vec3 s, glm::vec3 v, util::Material mat) {
             float minimums[3];
             float maximums[3];
-            float num1 = (-0.5f - s.x)/v.x;
-            float num2 = (0.5f - s.x)/v.x;
-            float minimum = std::min(num1, num2);
-            float maximum = std::max(num1, num2);
-            minimums[0] = minimum;
-            maximums[0] = maximum;
-            num1 = (-0.5f - s.y)/v.y;
-            num2 = (0.5f - s.y)/v.y;
-            minimum = std::min(num1, num2);
-            maximum = std::max(num1, num2);
-            minimums[1] = minimum;
-            maximums[1] = maximum;
-            num1 = (-0.5f - s.z)/v.z;
-            num2 = (0.5f - s.z)/v.z;
-            minimum = std::min(num1, num2);
-            maximum = std::max(num1, num2);
-            minimums[2] = minimum;
-            maximums[2] = maximum;
-            minimum = std::max(minimums[0], minimums[1]);
-            minimum = std::max(minimum, minimums[2]);
-            maximum = std::min(maximums[0], maximums[1]);
-            maximum = std::min(maximum, maximums[2]);
+            for (int i = 0; i < 3; i++) {
+                float num1 = (-0.5f - s[i]) / v[i];
+                float num2 = (0.5f - s[i]) / v[i];
+                minimums[i] = std::min(num1, num2);
+                maximums[i] = std::max(num1, num2);
+            }
+
+            float minimum = std::max(minimums[0], std::max(minimums[1], minimums[2]));
+            float maximum = std::min(maximums[0], std::min(maximums[1], maximums[2]));
 
             if (maximum >= minimum) {
                 glm::vec3 poi = s + minimum*v;
@@ -127,15 +114,30 @@ namespace sgraph {
             }
         }
 
-        void checkForSphereIntersection(glm::vec3 s, glm::vec3 v) {
+        void checkForSphereIntersection(glm::vec3 s, glm::vec3 v, util::Material mat) {
             float A = glm::dot(v, v);
             float B = 2 * glm::dot(v, s);
             float C = glm::dot(s, s) - 1;
-            if((B * B - 4 * A * C) > 0) {
+            if((B * B - 4 * A * C) >= 0) {
                 float t1 = (-B + std::sqrt(B * B - 4 * A * C))/(2 * A);
                 float t2 = (-B - std::sqrt(B * B - 4 * A * C))/(2 * A);
-                if(t1 > 0 || t2 > 0) {
-                    // hit = true;
+                float t = t1;
+                if(t < 0) {
+                    t = t2;
+                }
+                if(t > 0) {
+                    glm::vec3 poi = s + t * v;
+                    glm::vec4 viewPoi = modelview.top() * glm::vec4(poi, 1.0f);
+                    glm::vec3 normal = glm::normalize(poi);
+                    glm::vec4 viewNormal = glm::inverse(glm::transpose(modelview.top())) * glm::vec4(normal, 0.0f);
+                    if (hit.getHit()) {
+                        if (hit.getTime() > t) {
+                            editHit(t, viewPoi, viewNormal, mat);
+                        }
+                    } else {
+                        hit.triggerHit();
+                        editHit(t, viewPoi, viewNormal, mat);
+                    }
                 }
             }
         }

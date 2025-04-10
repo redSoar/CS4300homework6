@@ -26,7 +26,7 @@ void Controller::initScenegraph() {
      
     
     //read in the file of commands
-    ifstream inFile("scenegraphmodels/box.txt");
+    ifstream inFile("scenegraphmodels/simple.txt");
     //ifstream inFile("tryout.txt");
     sgraph::ScenegraphImporter importer;
     
@@ -52,9 +52,10 @@ void Controller::run()
     while (!view.shouldWindowClose()) {
         if(rayTraceMode){
             if (count == 0) {
+                view.closeWindow();
                 view.raytrace(scenegraph);
                 count++;
-                break;
+                exit(EXIT_SUCCESS);
             }
         } else {
             view.display(scenegraph);

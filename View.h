@@ -15,10 +15,10 @@
 #include "VertexAttrib.h"
 #include "Callbacks.h"
 #include "sgraph/IScenegraph.h"
+#include "HitRecord.h"
 
 #include <stack>
 using namespace std;
-
 
 class View
 {
@@ -30,7 +30,9 @@ public:
     void raytrace(sgraph::IScenegraph *scenegraph);
     bool shouldWindowClose();
     void closeWindow();
-    void imageToPPM(glm::vec3 image[70][70]);
+    void imageToPPM(const std::vector<std::vector<glm::vec3>>& image);
+    glm::vec3 shade(HitRecord hitrec, vector<util::Light> lightsInViewSpace);
+
 
 private: 
 
@@ -43,8 +45,8 @@ private:
     stack<glm::mat4> modelview;
     sgraph::SGNodeVisitor *renderer;
     glm::mat4 lookat;
-    int height;
     int width;
+    int height;
     int frames;
     float fov;
     double time;
