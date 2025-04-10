@@ -141,9 +141,9 @@ void View::raytrace(sgraph::IScenegraph *scenegraph) {
             glm::vec3 d = glm::vec3(Vx, Vy, Vz);
             Ray3D ray(s, d);
             sgraph::Scenegraph* sgraph = (dynamic_cast<sgraph::Scenegraph*>(scenegraph));
-            bool hit = sgraph->raycast(ray, modelview.top());
-            if(hit) {
-                image[x][y] = glm::vec3(1, 1, 1);
+            HitRecord hit = sgraph->raycast(ray, modelview.top());
+            if(hit.getHit()) {
+                image[x][y] = glm::vec3(hit.getMaterial().getAmbient().x, hit.getMaterial().getAmbient().y, hit.getMaterial().getAmbient().z);
             }
             else {
                 image[x][y] = glm::vec3(0, 0, 0);

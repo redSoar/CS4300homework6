@@ -37,7 +37,7 @@ namespace sgraph {
             glm::vec4 transformedDirection = glm::normalize(glm::inverse(currentModelView) * glm::vec4(ray.getDirection(), 0.0f));
             
             if(instance == "box") {
-                checkForBoxIntersection(transformedOrigin, transformedDirection);
+                checkForBoxIntersection(transformedOrigin, transformedDirection, leafNode->getMaterial());
             }
             else if(instance == "sphere") {
                 checkForSphereIntersection(transformedOrigin, transformedDirection);
@@ -71,19 +71,18 @@ namespace sgraph {
             visitTransformNode(rotateNode);
         }
 
-        bool getHit() {
+        HitRecord getHit() {
             return hit;
         }
-
 
         private:
         stack<glm::mat4>& modelview;   
         Ray3D ray; 
-        bool hit = false;
+        HitRecord hit;
         int depth = 0;
         int indentation = 3;
 
-        void checkForBoxIntersection(glm::vec3 s, glm::vec3 v) {
+        void checkForBoxIntersection(glm::vec3 s, glm::vec3 v, util::Material mat) {
             float minimums[3];
             float maximums[3];
             float num1 = (-0.5f - s.x)/v.x;
@@ -110,7 +109,21 @@ namespace sgraph {
             maximum = std::min(maximum, maximums[2]);
 
             if (maximum >= minimum) {
-                hit = true;
+                glm::vec3 poi = s + minimum*v;
+                glm::vec4 viewPoi = modelview.top() * glm::vec4(poi, 1.0f);
+
+                glm::vec3 normal = calculateNormalForBox(poi);
+                glm::vec4 viewNormal = glm::inverse(glm::transpose(modelview.top())) * glm::vec4(normal, 0.0f);
+
+                if (hit.getHit()) {
+                    if (hit.getTime() > minimum) {
+                        editHit(minimum, viewPoi, viewNormal, mat);
+                    }
+                }
+                else {
+                    hit.triggerHit();
+                    editHit(minimum, viewPoi, viewNormal, mat);
+                }
             }
         }
 
@@ -122,10 +135,40 @@ namespace sgraph {
                 float t1 = (-B + std::sqrt(B * B - 4 * A * C))/(2 * A);
                 float t2 = (-B - std::sqrt(B * B - 4 * A * C))/(2 * A);
                 if(t1 > 0 || t2 > 0) {
-                    hit = true;
+                    // hit = true;
                 }
             }
         }
+
+        void editHit(float time, glm::vec4 intersection, glm::vec4 normalVec, util::Material material) {
+            hit.setTime(time);
+            hit.setIntersect(glm::vec3(intersection.x, intersection.y, intersection.z));
+            hit.setNormal(glm::vec3(normalVec.x, normalVec.y, normalVec.z));
+            hit.setMaterial(material);
+        }
+
+        glm::vec3 calculateNormalForBox(glm::vec3 poi) {
+            if (poi.x == 0.5f) {
+                return glm::vec3(1,0,0);
+            }
+            else if (poi.x == -0.5f) {
+                return glm::vec3(-1,0,0);
+            }
+            else if (poi.y == 0.5f) {
+                return glm::vec3(0,1,0);
+            }
+            else if (poi.y == -0.5f) {
+                return glm::vec3(0,-1,0);
+            }
+            else if (poi.z == 0.5f) {
+                return glm::vec3(0,0,1);
+            }
+            else if (poi.z == -0.5f) {
+                return glm::vec3(0,0,-1);
+            }
+            return glm::vec3(0,0,0);
+        }
+
    };
 }
 

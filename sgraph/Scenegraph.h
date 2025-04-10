@@ -7,6 +7,7 @@
 #include "IVertexData.h"
 #include "PolygonMesh.h"
 #include "../Ray3D.h"
+#include "../HitRecord.h"
 #include "RayCastVisitor.h"
 #include <string>
 #include <map>
@@ -116,7 +117,7 @@ namespace sgraph {
       return textures;
     }
 
-    bool raycast(Ray3D ray, glm::mat4 mv){
+    HitRecord raycast(Ray3D ray, glm::mat4 mv){
       stack<glm::mat4> modelviews;
       modelviews.push(mv);
       RayCastVisitor *rcv = new sgraph::RayCastVisitor(modelviews, ray);
