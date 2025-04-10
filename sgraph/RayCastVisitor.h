@@ -121,23 +121,32 @@ namespace sgraph {
             if((B * B - 4 * A * C) >= 0) {
                 float t1 = (-B + std::sqrt(B * B - 4 * A * C))/(2 * A);
                 float t2 = (-B - std::sqrt(B * B - 4 * A * C))/(2 * A);
-                float t = t1;
-                if(t < 0) {
+                float t;
+
+                if (t1 > 0 && t2 > 0) {
+                    t = std::min(t1, t2);
+                }
+                else if (t1 > 0) {
+                    t = t1;
+                }
+                else if (t2 > 0) {
                     t = t2;
                 }
-                if(t > 0) {
-                    glm::vec3 poi = s + t * v;
-                    glm::vec4 viewPoi = modelview.top() * glm::vec4(poi, 1.0f);
-                    glm::vec3 normal = glm::normalize(poi);
-                    glm::vec4 viewNormal = glm::inverse(glm::transpose(modelview.top())) * glm::vec4(normal, 0.0f);
-                    if (hit.getHit()) {
-                        if (hit.getTime() > t) {
-                            editHit(t, viewPoi, viewNormal, mat);
-                        }
-                    } else {
-                        hit.triggerHit();
+                else {
+                    return;
+                }
+
+                glm::vec3 poi = s + t * v;
+                glm::vec4 viewPoi = modelview.top() * glm::vec4(poi, 1.0f);
+                glm::vec3 normal = glm::normalize(poi);
+                glm::vec4 viewNormal = glm::inverse(glm::transpose(modelview.top())) * glm::vec4(normal, 0.0f);
+                if (hit.getHit()) {
+                    if (hit.getTime() > t) {
                         editHit(t, viewPoi, viewNormal, mat);
                     }
+                } else {
+                    hit.triggerHit();
+                    editHit(t, viewPoi, viewNormal, mat);
                 }
             }
         }
