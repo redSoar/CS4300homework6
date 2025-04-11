@@ -1,5 +1,5 @@
 #all the instances
-instance sphere models/cylinder.obj
+instance cylinder models/cylinder.obj
 
 #materials
 material box-material
@@ -26,7 +26,7 @@ group root root
 assign-light one-light root
 
 scale b-scale b-scale 20 20 20
-leaf crate crate instanceof sphere
+leaf crate crate instanceof cylinder
 assign-material crate box-material
 assign-texture crate white
 
